@@ -1,5 +1,4 @@
 "use client"
-
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
@@ -16,6 +15,7 @@ import { LogOut, User, Menu } from "lucide-react"
 import type { UserRole } from "@/lib/db/models"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { MobileSidebar } from "./mobile-sidebar"
+import Link from "next/link"
 
 interface HeaderProps {
   user: {
@@ -82,10 +82,12 @@ export function Header({ user }: HeaderProps) {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <Link href='/profile'>
           <DropdownMenuItem>
             <User className="mr-2 h-4 w-4" />
             Profile
           </DropdownMenuItem>
+          </Link>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout} className="text-destructive">
             <LogOut className="mr-2 h-4 w-4" />
