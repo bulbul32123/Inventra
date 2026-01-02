@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from "recharts";
 import { formatCurrency } from "@/lib/utils/format";
+import { CustomTooltip } from "./CustomTooltip";
 
 interface CategoryData {
   category: string;
@@ -21,13 +22,13 @@ interface CategoryChartProps {
   data: CategoryData[];
 }
 
-const COLORS = ["#000000", "#4B5563", "#9CA3AF"];
+const COLORS = ["#caef96", "#a4e8eb", "#fcd3e2", "#f7eb9d", "#e8c7ae","8eb8f2"];
 
 export function CategoryChart({ data }: CategoryChartProps) {
   const total = data.reduce((sum, item) => sum + item.revenue, 0);
 
   return (
-    <Card>
+    <Card className="">
       <CardHeader>
         <CardTitle>Sales by Category</CardTitle>
       </CardHeader>
@@ -45,8 +46,8 @@ export function CategoryChart({ data }: CategoryChartProps) {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  outerRadius={150}
-                  fill="#8884d8"
+                  outerRadius={160}
+                  fill="#ffffff"
                   dataKey="revenue"
                   nameKey="category"
                 >
@@ -57,18 +58,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
                     />
                   ))}
                 </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "8px",
-                  }}
-                  formatter={(value: number) => [
-                    formatCurrency(value),
-                    "Revenue",
-                  ]}
-                />
-                <Legend />
+                <Tooltip content={<CustomTooltip />} />
               </PieChart>
             </ResponsiveContainer>
 
@@ -82,7 +72,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-3 h-3 rounded-full"
+                        className="w-4 h-4 rounded-full"
                         style={{
                           backgroundColor: COLORS[index % COLORS.length],
                         }}
@@ -107,5 +97,3 @@ export function CategoryChart({ data }: CategoryChartProps) {
     </Card>
   );
 }
-
-
