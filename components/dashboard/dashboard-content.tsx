@@ -3,6 +3,7 @@ import { Product, Sale, Customer } from "@/lib/db/models"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Package, DollarSign, Users, AlertTriangle } from "lucide-react"
 import { formatCurrency } from "@/lib/utils/format"
+import { DashboardComponents } from "./DashboardComponents"
 
 async function getDashboardStats() {
   await connectDB()
@@ -81,12 +82,8 @@ export async function DashboardContent() {
           </CardContent>
         </Card>
       </div>
+      <DashboardComponents />
     </div>
   )
 }
-
-
-
-
-
 

@@ -1,26 +1,36 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { StockAdjustment } from "./stock-adjustment"
-import { InventoryLogs } from "./inventory-logs"
-import { LowStockAlerts } from "./low-stock-alerts"
+import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { StockAdjustment } from "./stock-adjustment";
+import { InventoryLogs } from "./inventory-logs";
+import { LowStockAlerts } from "./low-stock-alerts";
 
 export function InventoryManagement() {
-  const [activeTab, setActiveTab] = useState("adjustment")
+  const [activeTab, setActiveTab] = useState("adjustment");
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Inventory Management</h1>
-        <p className="text-muted-foreground">Track stock levels, adjustments, and alerts</p>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Inventory Management
+        </h1>
+        <p className="text-muted-foreground">
+          Track stock levels, adjustments, and alerts
+        </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="adjustment">Stock Adjustment</TabsTrigger>
-          <TabsTrigger value="logs">Inventory Logs</TabsTrigger>
-          <TabsTrigger value="alerts">Low Stock Alerts</TabsTrigger>
+        <TabsList className="bg-primary/40 md:gap-2 ">
+          <TabsTrigger className="cursor-pointer" value="adjustment">
+            Stock Adjustment
+          </TabsTrigger>
+          <TabsTrigger className="cursor-pointer" value="logs">
+            Inventory Logs
+          </TabsTrigger>
+          <TabsTrigger className="cursor-pointer" value="alerts">
+            Low Stock Alerts
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="adjustment" className="mt-6">
@@ -36,5 +46,5 @@ export function InventoryManagement() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
