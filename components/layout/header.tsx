@@ -102,8 +102,8 @@ export function Header() {
         </Sheet>
       </div>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <DropdownMenu >
+        <DropdownMenuTrigger asChild className="!bg-transparent">
           <Button variant="ghost" className="gap-2">
             {user?.avatar ? (
               <Avatar className="h-8 w-8">
@@ -149,14 +149,14 @@ export function Header() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <Link href="/profile">
-            <DropdownMenuItem>
+          <Link href="/profile" >
+            <DropdownMenuItem className="!cursor-pointer">
               <User className="mr-2 h-4 w-4" />
               Profile
             </DropdownMenuItem>
           </Link>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+          <DropdownMenuItem onClick={handleLogout} className="text-destructive !cursor-pointer">
             <LogOut className="mr-2 h-4 w-4" />
             Logout
           </DropdownMenuItem>

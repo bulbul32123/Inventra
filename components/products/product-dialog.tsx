@@ -1,45 +1,83 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { createProduct, updateProduct, getCategories } from "@/lib/actions/product.actions"
-import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
-import useSWR from "swr"
+import type React from "react";
+import Barcode from "react-barcode";
+import { nanoid } from "nanoid";
+import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  createProduct,
+  updateProduct,
+  getCategories,
+} from "@/lib/actions/product.actions";
+import { toast } from "sonner";
+import { Loader2, X } from "lucide-react";
+import useSWR from "swr";
+import GenerateIcon from "../GenerateIcon";
 
 interface ProductDialogProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
   product?: {
-    _id: string
-    name: string
-    sku: string
-    barcode: string
-    category: string
-    costPrice: number
-    sellingPrice: number
-    stock: number
-    reorderLevel: number
-    status: "active" | "inactive"
-    description?: string
-    brand?: string
-    taxPercent?: number
-    unit?: string
-  } | null
-  onSuccess: () => void
+    _id: string;
+    name: string;
+    sku: string;
+    barcode: string;
+    category: string;
+    costPrice: number;
+    sellingPrice: number;
+    stock: number;
+    reorderLevel: number;
+    status: "active" | "inactive";
+    description?: string;
+    brand?: string;
+    taxPercent?: number;
+    unit?: string;
+  } | null;
+  onSuccess: () => void;
+}
+function generateSKU(category: string) {
+  const prefix = category ? category.slice(0, 4).toUpperCase() : "PRD";
+  return `${prefix}-${nanoid(6).toUpperCase()}`;
 }
 
-const defaultCategories = ["Electronics", "Clothing", "Food & Beverages", "Health & Beauty", "Home & Garden", "Other"]
+function generateBarcode() {
+  return Math.floor(100000000000 + Math.random() * 900000000000).toString();
+}
 
-export function ProductDialog({ open, onClose, product, onSuccess }: ProductDialogProps) {
-  const [isLoading, setIsLoading] = useState(false)
+const defaultCategories = [
+  "Electronics",
+  "Clothing",
+  "Food & Beverages",
+  "Health & Beauty",
+  "Home & Garden",
+  "Other",
+];
+
+export function ProductDialog({
+  open,
+  onClose,
+  product,
+  onSuccess,
+}: ProductDialogProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [showBarCode, setShowBarCode] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     sku: "",
@@ -54,10 +92,12 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
     reorderLevel: 10,
     status: "active" as "active" | "inactive",
     unit: "pcs",
-  })
+  });
 
-  const { data: categoriesData } = useSWR("categories", getCategories)
-  const categories = [...new Set([...defaultCategories, ...(categoriesData?.data || [])])]
+  const { data: categoriesData } = useSWR("categories", getCategories);
+  const categories = [
+    ...new Set([...defaultCategories, ...(categoriesData?.data || [])]),
+  ];
 
   useEffect(() => {
     if (product) {
@@ -75,7 +115,7 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
         reorderLevel: product.reorderLevel,
         status: product.status,
         unit: product.unit || "pcs",
-      })
+      });
     } else {
       setFormData({
         name: "",
@@ -91,35 +131,52 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
         reorderLevel: 10,
         status: "active",
         unit: "pcs",
-      })
+      });
     }
-  }, [product, open])
+  }, [product, open]);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
+    if (!formData.sku) {
+      formData.sku = generateSKU(formData.category);
+    }
+
+    if (!formData.barcode) {
+      formData.barcode = generateBarcode();
+    }
 
     try {
-      const result = product ? await updateProduct(product._id, formData) : await createProduct(formData)
+      const result = product
+        ? await updateProduct(product._id, formData)
+        : await createProduct(formData);
 
       if (result.success) {
-        toast.success(product ? "Product updated" : "Product created")
-        onSuccess()
+        toast.success(product ? "Product updated" : "Product created");
+        onSuccess();
       } else {
-        toast.error(result.error || "Operation failed")
+        toast.error(result.error || "Operation failed");
       }
     } catch {
-      toast.error("An error occurred")
+      toast.error("An error occurred");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
-
+  const handleBarCodeGenerator = () => {
+    setShowBarCode(true);
+    setFormData((prev) => ({
+      ...prev,
+      barcode: generateBarcode(),
+    }));
+  };
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{product ? "Edit Product" : "Add New Product"}</DialogTitle>
+          <DialogTitle>
+            {product ? "Edit Product" : "Add New Product"}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -129,36 +186,94 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, name: e.target.value }))
+                }
                 required
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="sku">SKU</Label>
-              <Input
-                id="sku"
-                value={formData.sku}
-                onChange={(e) => setFormData((prev) => ({ ...prev, sku: e.target.value }))}
-                placeholder="Auto-generated if empty"
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="sku"
+                  value={formData.sku}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, sku: e.target.value }))
+                  }
+                  placeholder="Auto-generated"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  title="Generate SKU"
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      sku: generateSKU(prev.category),
+                    }))
+                  }
+                >
+                  <GenerateIcon />
+                </Button>
+              </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="barcode">Barcode</Label>
-              <Input
-                id="barcode"
-                value={formData.barcode}
-                onChange={(e) => setFormData((prev) => ({ ...prev, barcode: e.target.value }))}
-                placeholder="Auto-generated if empty"
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="barcode"
+                  value={formData.barcode}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      barcode: e.target.value,
+                    }))
+                  }
+                  placeholder="Auto-generated"
+                />
+                <Button
+                  type="button"
+                  title="Generate Barcode"
+                  variant="outline"
+                  onClick={handleBarCodeGenerator}
+                >
+                  <GenerateIcon />
+                </Button>
+              </div>
+
+              {/* Barcode Preview */}
+              {showBarCode && (
+                <div className="mt-2 border rounded-lg p-3 bg-muted flex justify-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size={'sm'}
+                    title="Close Barcode"
+                    onClick={() => setShowBarCode(false)}
+                  >
+                    <X size={19} />
+                  </Button>
+                  <Barcode
+                    value={formData.barcode}
+                    height={60}
+                    width={2}
+                    displayValue={true}
+                    fontSize={12}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
               <Select
                 value={formData.category}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, category: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
@@ -178,7 +293,9 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
               <Input
                 id="brand"
                 value={formData.brand}
-                onChange={(e) => setFormData((prev) => ({ ...prev, brand: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, brand: e.target.value }))
+                }
               />
             </div>
 
@@ -190,7 +307,12 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
                 step="0.01"
                 min="0"
                 value={formData.costPrice}
-                onChange={(e) => setFormData((prev) => ({ ...prev, costPrice: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    costPrice: Number(e.target.value),
+                  }))
+                }
                 required
               />
             </div>
@@ -203,7 +325,12 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
                 step="0.01"
                 min="0"
                 value={formData.sellingPrice}
-                onChange={(e) => setFormData((prev) => ({ ...prev, sellingPrice: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    sellingPrice: Number(e.target.value),
+                  }))
+                }
                 required
               />
             </div>
@@ -217,7 +344,12 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
                 min="0"
                 max="100"
                 value={formData.taxPercent}
-                onChange={(e) => setFormData((prev) => ({ ...prev, taxPercent: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    taxPercent: Number(e.target.value),
+                  }))
+                }
               />
             </div>
 
@@ -228,7 +360,12 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
                 type="number"
                 min="0"
                 value={formData.stock}
-                onChange={(e) => setFormData((prev) => ({ ...prev, stock: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    stock: Number(e.target.value),
+                  }))
+                }
                 disabled={!!product}
               />
             </div>
@@ -240,7 +377,12 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
                 type="number"
                 min="0"
                 value={formData.reorderLevel}
-                onChange={(e) => setFormData((prev) => ({ ...prev, reorderLevel: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    reorderLevel: Number(e.target.value),
+                  }))
+                }
               />
             </div>
 
@@ -248,7 +390,9 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
               <Label htmlFor="unit">Unit</Label>
               <Select
                 value={formData.unit}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, unit: value }))}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, unit: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -269,7 +413,9 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
               <Label htmlFor="status">Status</Label>
               <Select
                 value={formData.status}
-                onValueChange={(value: "active" | "inactive") => setFormData((prev) => ({ ...prev, status: value }))}
+                onValueChange={(value: "active" | "inactive") =>
+                  setFormData((prev) => ({ ...prev, status: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -286,7 +432,12 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 rows={3}
               />
             </div>
@@ -312,5 +463,5 @@ export function ProductDialog({ open, onClose, product, onSuccess }: ProductDial
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

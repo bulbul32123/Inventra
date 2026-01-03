@@ -1,25 +1,37 @@
-"use client"
-import type React from "react"
+"use client";
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getSettings, updateSettings } from "@/lib/actions/settings.actions"
-import { toast } from "sonner"
-import { Loader2, Store, Receipt, Tag, Settings2 } from "lucide-react"
-import useSWR from "swr"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getSettings, updateSettings } from "@/lib/actions/settings.actions";
+import { toast } from "sonner";
+import { Loader2, Store, Receipt, Tag, Settings2 } from "lucide-react";
+import useSWR from "swr";
 
 export function SettingsForm() {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data, mutate } = useSWR("settings", getSettings)
-  const settings = data?.data
+  const { data, mutate } = useSWR("settings", getSettings);
+  const settings = data?.data;
 
   const [formData, setFormData] = useState({
     storeName: "",
@@ -34,7 +46,7 @@ export function SettingsForm() {
     enableLoyalty: false,
     loyaltyPointsPerCurrency: 1,
     receiptFooter: "",
-  })
+  });
 
   useEffect(() => {
     if (settings) {
@@ -51,49 +63,51 @@ export function SettingsForm() {
         enableLoyalty: settings.enableLoyalty || false,
         loyaltyPointsPerCurrency: settings.loyaltyPointsPerCurrency || 1,
         receiptFooter: settings.receiptFooter || "",
-      })
+      });
     }
-  }, [settings])
+  }, [settings]);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
-    const result = await updateSettings(formData)
+    const result = await updateSettings(formData);
 
     if (result.success) {
-      toast.success("Settings saved successfully")
-      mutate()
+      toast.success("Settings saved successfully");
+      mutate();
     } else {
-      toast.error(result.error || "Failed to save settings")
+      toast.error(result.error || "Failed to save settings");
     }
 
-    setIsLoading(false)
+    setIsLoading(false);
   }
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">Configure your store and system preferences</p>
+        <p className="text-muted-foreground">
+          Configure your store and system preferences
+        </p>
       </div>
 
       <form onSubmit={handleSubmit}>
         <Tabs defaultValue="store" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="store" className="gap-2">
+          <TabsList className="bg-primary/40">
+            <TabsTrigger value="store" className="gap-2 cursor-pointer">
               <Store className="h-4 w-4" />
               Store
             </TabsTrigger>
-            <TabsTrigger value="invoice" className="gap-2">
+            <TabsTrigger value="invoice" className="gap-2 cursor-pointer">
               <Receipt className="h-4 w-4" />
               Invoice
             </TabsTrigger>
-            <TabsTrigger value="inventory" className="gap-2">
+            <TabsTrigger value="inventory" className="gap-2 cursor-pointer">
               <Tag className="h-4 w-4" />
               Inventory
             </TabsTrigger>
-            <TabsTrigger value="advanced" className="gap-2">
+            <TabsTrigger value="advanced" className="gap-2 cursor-pointer">
               <Settings2 className="h-4 w-4" />
               Advanced
             </TabsTrigger>
@@ -103,7 +117,9 @@ export function SettingsForm() {
             <Card>
               <CardHeader>
                 <CardTitle>Store Information</CardTitle>
-                <CardDescription>Basic information about your business</CardDescription>
+                <CardDescription>
+                  Basic information about your business
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -111,7 +127,12 @@ export function SettingsForm() {
                   <Input
                     id="storeName"
                     value={formData.storeName}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, storeName: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        storeName: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
@@ -120,7 +141,12 @@ export function SettingsForm() {
                   <Textarea
                     id="storeAddress"
                     value={formData.storeAddress}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, storeAddress: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        storeAddress: e.target.value,
+                      }))
+                    }
                     rows={2}
                   />
                 </div>
@@ -131,7 +157,12 @@ export function SettingsForm() {
                     <Input
                       id="storePhone"
                       value={formData.storePhone}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, storePhone: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          storePhone: e.target.value,
+                        }))
+                      }
                     />
                   </div>
 
@@ -141,7 +172,12 @@ export function SettingsForm() {
                       id="storeEmail"
                       type="email"
                       value={formData.storeEmail}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, storeEmail: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          storeEmail: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                 </div>
@@ -151,7 +187,9 @@ export function SettingsForm() {
                     <Label htmlFor="currency">Currency</Label>
                     <Select
                       value={formData.currency}
-                      onValueChange={(value) => setFormData((prev) => ({ ...prev, currency: value }))}
+                      onValueChange={(value) =>
+                        setFormData((prev) => ({ ...prev, currency: value }))
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -171,7 +209,12 @@ export function SettingsForm() {
                     <Input
                       id="currencySymbol"
                       value={formData.currencySymbol}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, currencySymbol: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          currencySymbol: e.target.value,
+                        }))
+                      }
                       maxLength={3}
                     />
                   </div>
@@ -184,7 +227,9 @@ export function SettingsForm() {
             <Card>
               <CardHeader>
                 <CardTitle>Invoice Settings</CardTitle>
-                <CardDescription>Customize your invoices and receipts</CardDescription>
+                <CardDescription>
+                  Customize your invoices and receipts
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -192,10 +237,17 @@ export function SettingsForm() {
                   <Input
                     id="invoicePrefix"
                     value={formData.invoicePrefix}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, invoicePrefix: e.target.value.toUpperCase() }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        invoicePrefix: e.target.value.toUpperCase(),
+                      }))
+                    }
                     maxLength={5}
                   />
-                  <p className="text-xs text-muted-foreground">Example: {formData.invoicePrefix}-241215-000001</p>
+                  <p className="text-xs text-muted-foreground">
+                    Example: {formData.invoicePrefix}-241215-000001
+                  </p>
                 </div>
 
                 <div className="space-y-2">
@@ -203,7 +255,12 @@ export function SettingsForm() {
                   <Textarea
                     id="receiptFooter"
                     value={formData.receiptFooter}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, receiptFooter: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        receiptFooter: e.target.value,
+                      }))
+                    }
                     placeholder="Thank you for your purchase!"
                     rows={2}
                   />
@@ -226,9 +283,16 @@ export function SettingsForm() {
                     type="number"
                     min="0"
                     value={formData.lowStockThreshold}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, lowStockThreshold: Number(e.target.value) }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        lowStockThreshold: Number(e.target.value),
+                      }))
+                    }
                   />
-                  <p className="text-xs text-muted-foreground">Default reorder level for new products</p>
+                  <p className="text-xs text-muted-foreground">
+                    Default reorder level for new products
+                  </p>
                 </div>
 
                 <div className="space-y-2">
@@ -243,7 +307,9 @@ export function SettingsForm() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="CODE128">CODE128 (Recommended)</SelectItem>
+                      <SelectItem value="CODE128">
+                        CODE128 (Recommended)
+                      </SelectItem>
                       <SelectItem value="EAN13">EAN-13</SelectItem>
                       <SelectItem value="CODE39">CODE39</SelectItem>
                     </SelectContent>
@@ -263,17 +329,26 @@ export function SettingsForm() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label>Enable Loyalty Points</Label>
-                    <p className="text-xs text-muted-foreground">Award points to customers for purchases</p>
+                    <p className="text-xs text-muted-foreground">
+                      Award points to customers for purchases
+                    </p>
                   </div>
                   <Switch
                     checked={formData.enableLoyalty}
-                    onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, enableLoyalty: checked }))}
+                    onCheckedChange={(checked) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        enableLoyalty: checked,
+                      }))
+                    }
                   />
                 </div>
 
                 {formData.enableLoyalty && (
                   <div className="space-y-2">
-                    <Label htmlFor="loyaltyPoints">Points per {formData.currencySymbol}1 spent</Label>
+                    <Label htmlFor="loyaltyPoints">
+                      Points per {formData.currencySymbol}1 spent
+                    </Label>
                     <Input
                       id="loyaltyPoints"
                       type="number"
@@ -281,7 +356,10 @@ export function SettingsForm() {
                       step="0.1"
                       value={formData.loyaltyPointsPerCurrency}
                       onChange={(e) =>
-                        setFormData((prev) => ({ ...prev, loyaltyPointsPerCurrency: Number(e.target.value) }))
+                        setFormData((prev) => ({
+                          ...prev,
+                          loyaltyPointsPerCurrency: Number(e.target.value),
+                        }))
                       }
                     />
                   </div>
@@ -305,5 +383,5 @@ export function SettingsForm() {
         </div>
       </form>
     </div>
-  )
+  );
 }

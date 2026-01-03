@@ -22,7 +22,14 @@ interface CategoryChartProps {
   data: CategoryData[];
 }
 
-const COLORS = ["#caef96", "#a4e8eb", "#fcd3e2", "#f7eb9d", "#e8c7ae","8eb8f2"];
+const COLORS = [
+  "#caef96",
+  "#a4e8eb",
+  "#fcd3e2",
+  "#f7eb9d",
+  "#e8c7ae",
+  "8eb8f2",
+];
 
 export function CategoryChart({ data }: CategoryChartProps) {
   const total = data.reduce((sum, item) => sum + item.revenue, 0);
@@ -58,7 +65,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
                     />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip text="Revenue" />} />
               </PieChart>
             </ResponsiveContainer>
 

@@ -1,6 +1,6 @@
 import { formatCurrency } from "@/lib/utils/format";
 
-export const CustomTooltip = ({ active, payload, label }: any) => {
+export const CustomTooltip = ({ text,active, payload, label }: any) => {
   if (!active || !payload || !payload.length) return null;
 
   return (
@@ -13,8 +13,8 @@ export const CustomTooltip = ({ active, payload, label }: any) => {
         color: "black",
       }}
     >
-      <p className="text-sm font-medium">{payload[0].name}</p>
-      <p className="text-sm">Revenue: {formatCurrency(payload[0].value)}</p>
+      {/* <p className="text-sm font-medium">{payload[0].name}</p> */}
+      <p className="text-sm">{text}: {formatCurrency(payload[0].value)}</p>
     </div>
   );
 };

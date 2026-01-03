@@ -1,18 +1,25 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
-import { formatCurrency } from "@/lib/utils/format"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { formatCurrency } from "@/lib/utils/format";
 
 interface TrendData {
-  date: string
-  revenue: number
-  orders: number
-  profit: number
+  date: string;
+  revenue: number;
+  profit: number;
 }
 
 interface SalesTrendChartProps {
-  data: TrendData[]
+  data: TrendData[];
 }
 
 export function SalesTrendChart({ data }: SalesTrendChartProps) {
@@ -21,30 +28,83 @@ export function SalesTrendChart({ data }: SalesTrendChartProps) {
       <CardHeader>
         <CardTitle>Revenue & Profit Trend</CardTitle>
       </CardHeader>
+
       <CardContent>
         {data.length === 0 ? (
-          <div className="flex items-center justify-center h-[400px] text-muted-foreground">No data available</div>
+          <div className="flex h-[400px] items-center justify-center text-muted-foreground">
+            No data available
+          </div>
         ) : (
           <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-              <XAxis dataKey="date" className="text-xs" tick={{ fill: "currentColor" }} />
-              <YAxis className="text-xs" tick={{ fill: "currentColor" }} tickFormatter={(v) => `$${v}`} />
+            <AreaChart data={data} margin={{ top: 20, right: 20, left: 10 }}>
+              {/* Gradient definitions */}
+              <defs>
+                <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                </linearGradient>
+
+                <linearGradient id="profitGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(var(--chart-2))" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="hsl(var(--chart-2))" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+
+              {/* Subtle grid */}
+              <CartesianGrid vertical={false} stroke="hsl(var(--border))" />
+
+              {/* X Axis */}
+              <XAxis
+                dataKey="date"
+                tick={{ fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+              />
+
+              {/* Single Y Axis */}
+              <YAxis
+                tickFormatter={(v) => formatCurrency(v)}
+                tick={{ fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+              />
+
+              {/* Tooltip */}
               <Tooltip
                 contentStyle={{
                   backgroundColor: "hsl(var(--card))",
+                  borderRadius: "12px",
                   border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px",
                 }}
-                formatter={(value: number) => [formatCurrency(value), ""]}
+                formatter={(value: number, name: string) => [
+                  formatCurrency(value),
+                  name === "revenue" ? "Revenue" : "Profit",
+                ]}
               />
-              <Legend />
-              <Line type="monotone" dataKey="revenue" name="Revenue" stroke="hsl(var(--primary))" strokeWidth={2} />
-              <Line type="monotone" dataKey="profit" name="Profit" stroke="hsl(var(--chart-2))" strokeWidth={2} />
-            </LineChart>
+
+              {/* Revenue */}
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="hsl(var(--primary))"
+                fill="url(#revenueGradient)"
+                strokeWidth={2}
+                activeDot={{ r: 6 }}
+              />
+
+              {/* Profit */}
+              <Area
+                type="monotone"
+                dataKey="profit"
+                stroke="hsl(var(--chart-2))"
+                fill="url(#profitGradient)"
+                strokeWidth={2}
+                activeDot={{ r: 6 }}
+              />
+            </AreaChart>
           </ResponsiveContainer>
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

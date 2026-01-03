@@ -36,6 +36,7 @@ export default function ProfilePage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState("");
   const [changePasswordError, setChangePasswordError] = useState("");
+  const [changePasswordSuccess, setChangePasswordSuccess] = useState("");
   const [success, setSuccess] = useState("");
 
   const [formData, setFormData] = useState({
@@ -225,14 +226,14 @@ export default function ProfilePage() {
         throw new Error(data.error || "Failed to change password");
       }
 
-      setSuccess("Password changed successfully");
+      setChangePasswordSuccess("Password changed successfully");
       setPasswordData({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
 
-      setTimeout(() => setSuccess(""), 3000);
+      setTimeout(() => setChangePasswordSuccess(""), 3000);
     } catch (err: any) {
       setChangePasswordError(err.message || "Failed to change password");
       setTimeout(() => setChangePasswordError(""), 3000);
@@ -251,9 +252,9 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white px-2 md:px-6">
       {/* Header */}
-      <div className="border-b border-gray-200 px-6 py-4">
+      <div className="border-b border-gray-200 py-4">
         <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
         <p className="text-sm text-gray-500 mt-1">
           Manage your account information
@@ -262,7 +263,7 @@ export default function ProfilePage() {
 
       {/* Alert Messages */}
       {(error || success) && (
-        <div className="max-w-4xl mx-auto px-6 pt-6">
+        <div className="max-w-4xl mx-auto px-2 pt-6">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-4">
               {error}
@@ -277,9 +278,9 @@ export default function ProfilePage() {
       )}
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className="max-w-4xl mx-auto py-8">
         {/* Profile Image Section */}
-        <div className="bg-white border border-gray-200 rounded-lg p-8 mb-6">
+        <div className="bg-white border border-gray-200 rounded-lg py-8 mb-6">
           <div className="flex flex-col items-center">
             <div className="relative group">
               {formData.avatar ? (
@@ -436,9 +437,14 @@ export default function ProfilePage() {
 
         {/* Change Password Section */}
         <div className="bg-white border border-gray-200 rounded-lg p-8">
-          {changePasswordError && (
+          {changePasswordError && !changePasswordSuccess && (
             <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-4">
               {changePasswordError}
+            </div>
+          )}
+          {changePasswordSuccess && (
+            <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-4">
+              {changePasswordSuccess}
             </div>
           )}
 

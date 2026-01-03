@@ -1,44 +1,41 @@
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { register } from "@/lib/auth/actions"
-import { Loader2, AlertCircle } from "lucide-react"
+"use client";
+import type React from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { register } from "@/lib/auth/actions";
+import { Loader2, AlertCircle } from "lucide-react";
 
 export function RegisterForm() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(null)
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData(e.currentTarget);
     const result = await register({
       email: formData.get("email") as string,
       password: formData.get("password") as string,
       name: formData.get("name") as string,
       role: "owner", // First user is always owner
-    })
-    console.log("result: ",result);
-    
+    });
+    console.log("result: ", result);
 
     if (result.success) {
-      router.push("/dashboard")
-      router.refresh()
+      router.push("/dashboard");
+      router.refresh();
     } else {
-      setError(result.error || "Registration failed")
-      setIsLoading(false)
+      setError(result.error || "Registration failed");
+      setIsLoading(false);
     }
   }
 
@@ -54,7 +51,13 @@ export function RegisterForm() {
           )}
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
-            <Input id="name" name="name" placeholder="John Doe" required disabled={isLoading} />
+            <Input
+              id="name"
+              name="name"
+              placeholder="John Doe"
+              required
+              disabled={isLoading}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -82,7 +85,7 @@ export function RegisterForm() {
             />
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4">
+        <CardFooter className="flex flex-col gap-4 mt-3">
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>
@@ -95,12 +98,12 @@ export function RegisterForm() {
           </Button>
           <p className="text-sm text-muted-foreground text-center">
             Already have an account?{" "}
-            <Link href="/login" className="text-primary hover:underline">
+            <Link href="/login" className="text-black hover:underline">
               Sign in
             </Link>
           </p>
         </CardFooter>
       </form>
     </Card>
-  )
+  );
 }

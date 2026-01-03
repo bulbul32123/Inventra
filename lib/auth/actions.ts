@@ -140,7 +140,7 @@ export async function logout(): Promise<void> {
   }
 
   await deleteSession()
-  redirect("/login")
+  redirect("/")
 }
 
 export async function getCurrentUser() {
