@@ -1,10 +1,10 @@
-import { RegisterForm } from "@/components/auth/register-form"
-import type { Metadata } from "next"
+import { RegisterForm } from "@/components/auth/register-form";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Register | POS System",
-  description: "Create a new account",
-}
+  title: "Register - Inventra",
+  description: "Create a new account in Inventra",
+};
 
 export default function RegisterPage() {
   return (
@@ -17,5 +17,5 @@ export default function RegisterPage() {
         <RegisterForm />
       </div>
     </main>
-  )
+  );
 }
