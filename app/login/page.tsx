@@ -2,7 +2,7 @@ import { LoginForm } from "@/components/auth/login-form"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Login | POS System",
+  title: "Login - Inventra | Complete Inventory & Point of Sale System",
   description: "Sign in to your account",
 }
 
