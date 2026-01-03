@@ -4,7 +4,8 @@ import { POSTerminal } from "@/components/pos/pos-terminal"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Point of Sale | POS System",
+  title: "Point of Sale - Inventra",
+  description: "Process sales quickly with a fast, intuitive POS interface. Handle payments, discounts, receipts, and taxes with ease.",
 }
 
 export default async function POSPage() {
