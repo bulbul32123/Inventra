@@ -1,19 +1,23 @@
-import mongoose, { Schema, type Document, type Model } from "mongoose"
+// lib/db/models/User.ts
+import mongoose, { Schema, type Document, type Model } from "mongoose";
 
-export type UserRole = "owner" | "manager" | "cashier"
+export type UserRole = "owner" | "manager" | "cashier";
 
 export interface IUser extends Document {
-  _id: mongoose.Types.ObjectId
-  email: string
-  password: string
-  name: string
-  role: UserRole
-  phone?: string
-  avatar?: string
-  isActive: boolean
-  lastLogin?: Date
-  createdAt: Date
-  updatedAt: Date
+  _id: mongoose.Types.ObjectId;
+  email: string;
+  password: string;
+  name: string;
+  role: UserRole;
+  phone?: string;
+  avatar?: string;
+  isActive: boolean;
+  lastLogin?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  // New fields for auto-deletion
+  isTrialUser: boolean; // Mark users as trial/preview users
+  expiresAt: Date; // When this user's data should be deleted
 }
 
 const UserSchema = new Schema<IUser>(
@@ -53,13 +57,30 @@ const UserSchema = new Schema<IUser>(
       index: true,
     },
     lastLogin: Date,
+    // New fields for auto-deletion
+    isTrialUser: {
+      type: Boolean,
+      default: true, // Set to true for all new users (trial mode)
+      index: true,
+    },
+    expiresAt: {
+      type: Date,
+      required: true,
+      index: true, // Index for efficient cleanup queries
+      default: function() {
+        // Set expiration to 5 minutes from creation
+        return new Date(Date.now() + 5 * 60 * 1000); // 5 minutes in milliseconds
+      }
+    },
   },
   {
     timestamps: true,
-  },
-)
+  }
+);
 
-// Compound index for active users by role
-UserSchema.index({ role: 1, isActive: 1 })
+// Compound indexes
+UserSchema.index({ role: 1, isActive: 1 });
+UserSchema.index({ isTrialUser: 1, expiresAt: 1 }); // For cleanup queries
 
-export const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>("User", UserSchema)
+export const User: Model<IUser> =
+  mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
