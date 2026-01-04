@@ -4,7 +4,6 @@ import { cleanupExpiredUsers } from "../../lib/utils/cleanup";
 
 const handler: Handler = schedule("0 3 * * *", async (event) => {
   console.log("Netlify scheduled cleanup started...", new Date().toISOString());
-
   try {
     const result = await cleanupExpiredUsers();
 
