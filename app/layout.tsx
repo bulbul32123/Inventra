@@ -7,7 +7,6 @@ import "./globals.css";
 
 import { Inter, Geist_Mono, Source_Serif_4 } from "next/font/google";
 
-// Fonts
 const inter = Inter({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],

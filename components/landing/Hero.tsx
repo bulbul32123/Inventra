@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { fadeIn, staggerContainer } from "@/lib/motion-variants";
+import Image from "next/image";
 
 export function Hero() {
   return (
@@ -76,10 +77,16 @@ export function Hero() {
                 <div className="h-3 w-3 rounded-full bg-success/20" />
               </div>
               <div className="text-xs font-medium text-muted-foreground">
-                Terminal 01 - Cashier: Sarah
+                Terminal 01 - Cashier: Bulbul
               </div>
             </div>
-            <img src="/pos.png" alt="POs" className="w-full h-full" />
+            <Image
+              src="/pos.png"
+              alt="POs"
+              className="w-full h-full"
+              width={100}
+              height={100}
+            />
           </div>
           {/* Decorative gradients */}
           <div className="absolute -top-20 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl -z-10" />

@@ -16,6 +16,7 @@ import { Search, Barcode, LogOut, ShoppingCart } from "lucide-react"
 import { logout } from "@/lib/auth/actions"
 import Link from "next/link"
 import useSWR from "swr"
+import Image from "next/image"
 
 interface CartItem {
   id: string
@@ -64,12 +65,10 @@ export function POSTerminal({ cashier }: POSTerminalProps) {
     { revalidateOnFocus: false },
   )
 
-  // Focus barcode input on mount and after actions
   useEffect(() => {
     barcodeRef.current?.focus()
   }, [cart.length, showPayment])
 
-  // Handle barcode scanner input (keyboard wedge mode)
   const handleBarcodeSubmit = useCallback(
     async (barcode: string) => {
       if (!barcode.trim()) return
@@ -101,20 +100,16 @@ export function POSTerminal({ cashier }: POSTerminalProps) {
     [cart],
   )
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // F2 - Focus barcode input
       if (e.key === "F2") {
         e.preventDefault()
         barcodeRef.current?.focus()
       }
-      // F4 - Checkout
       if (e.key === "F4" && cart.length > 0 && !showPayment) {
         e.preventDefault()
         setShowPayment(true)
       }
-      // Escape - Close payment / Clear
       if (e.key === "Escape") {
         if (showPayment) {
           setShowPayment(false)
@@ -130,7 +125,6 @@ export function POSTerminal({ cashier }: POSTerminalProps) {
     setCart((prev) => {
       const existing = prev.find((i) => i.product === item.product)
       if (existing) {
-        // Check stock
         if (existing.quantity >= existing.stock) {
           toast.error("Insufficient stock")
           return prev
@@ -231,7 +225,6 @@ export function POSTerminal({ cashier }: POSTerminalProps) {
     clearCart()
   }
 
-  // Calculate totals
   const subtotal = cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
   const totalDiscount = cart.reduce((sum, item) => {
     const itemSubtotal = item.unitPrice * item.quantity
@@ -250,13 +243,21 @@ export function POSTerminal({ cashier }: POSTerminalProps) {
 
   return (
     <div className="h-screen flex flex-col bg-muted/30">
-      {/* Header */}
       <header className="h-14 border-b bg-card px-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="flex items-center gap-2 font-bold">
-            <ShoppingCart className="h-5 w-5 text-primary" />
-            <span>POS</span>
-          </Link>
+        <Link
+          href={"/dashboard"}
+          className="flex items-center gap-2 cursor-pointer"
+        >
+          <Image
+            src={"/logo.svg"}
+            alt="Logo"
+            className="w-8 h-8 rounded-md"
+            width={8}
+            height={8}
+          />
+          <span className="text-2xl font-black tracking-tighter">Inventra</span>
+        </Link>
           <span className="text-sm text-muted-foreground">Cashier: {cashier.name}</span>
         </div>
         <div className="flex items-center gap-2">
@@ -269,9 +270,7 @@ export function POSTerminal({ cashier }: POSTerminalProps) {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Panel - Product Search & Scanner */}
         <div className="flex-1 flex flex-col p-4 overflow-hidden">
-          {/* Barcode Scanner Input */}
           <div className="flex gap-2 mb-4">
             <div className="relative flex-1">
               <Barcode className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -290,8 +289,6 @@ export function POSTerminal({ cashier }: POSTerminalProps) {
               />
             </div>
           </div>
-
-          {/* Product Search */}
           <div className="relative mb-4">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -301,8 +298,6 @@ export function POSTerminal({ cashier }: POSTerminalProps) {
               className="pl-9"
             />
           </div>
-
-          {/* Search Results */}
           {searchQuery.length >= 2 && searchResults?.data?.products && (
             <Card className="mb-4">
               <CardContent className="p-2">
@@ -341,8 +336,6 @@ export function POSTerminal({ cashier }: POSTerminalProps) {
               </CardContent>
             </Card>
           )}
-
-          {/* Cart */}
           <div className="flex-1 overflow-hidden">
             <POSCart
               items={cart}
@@ -353,14 +346,10 @@ export function POSTerminal({ cashier }: POSTerminalProps) {
           </div>
         </div>
 
-        {/* Right Panel - Summary & Payment */}
         <div className="w-96 border-l bg-card flex flex-col">
-          {/* Customer Selection */}
           <div className="p-4 border-b">
             <CustomerSearch selectedCustomer={selectedCustomer} onSelect={setSelectedCustomer} />
           </div>
-
-          {/* Order Summary */}
           <div className="flex-1 p-4 overflow-auto">
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
@@ -387,8 +376,6 @@ export function POSTerminal({ cashier }: POSTerminalProps) {
               </div>
             </div>
           </div>
-
-          {/* Action Buttons */}
           <div className="p-4 border-t space-y-2">
             <Button className="w-full h-12 text-lg" disabled={cart.length === 0} onClick={() => setShowPayment(true)}>
               Checkout (F4)
@@ -404,8 +391,6 @@ export function POSTerminal({ cashier }: POSTerminalProps) {
           </div>
         </div>
       </div>
-
-      {/* Payment Modal */}
       {showPayment && (
         <POSPayment
           total={grandTotal}

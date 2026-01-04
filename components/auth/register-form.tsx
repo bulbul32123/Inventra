@@ -1,6 +1,6 @@
 "use client";
 import type React from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -15,34 +15,56 @@ export function RegisterForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [slowMessage, setSlowMessage] = useState<string | null>(null);
+  const slowTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    setSlowMessage(null);
 
-    const formData = new FormData(e.currentTarget);
-    const result = await register({
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
-      name: formData.get("name") as string,
-      role: "owner",
-    });
-    console.log("result: ", result);
+    slowTimerRef.current = setTimeout(() => {
+      setSlowMessage(
+        "Account creation may take longer on the first request due to demo infrastructure."
+      );
+    }, 5000);
 
-    if (result.success) {
-      router.push("/dashboard");
-      router.refresh();
-    } else {
-      setError(result.error || "Registration failed");
-      setIsLoading(false);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const result = await register({
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+        name: formData.get("name") as string,
+        role: "owner",
+      });
+
+      if (result.success) {
+        router.push("/dashboard");
+        router.refresh();
+      } else {
+        setError(result.error || "Registration failed");
+        setIsLoading(false);
+      }
+    } finally {
+      if (slowTimerRef.current) {
+        clearTimeout(slowTimerRef.current);
+        slowTimerRef.current = null;
+      }
     }
   }
 
   return (
     <Card>
       <form onSubmit={handleSubmit}>
-        <CardContent className="pt-6 space-y-4">
+        <CardContent className="space-y-4">
+          {slowMessage && !error && (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{slowMessage}</AlertDescription>
+            </Alert>
+          )}
+
           {error && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />

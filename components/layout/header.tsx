@@ -29,8 +29,6 @@ export function Header() {
 
   useEffect(() => {
     fetchProfile();
-
-    // Listen for profile updates
     const handleProfileUpdate = () => {
       fetchProfile();
     };

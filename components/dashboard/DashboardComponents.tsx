@@ -54,7 +54,7 @@ export function DashboardComponents() {
   return (
     <div className="flex flex-col gap-5">
       <CategoryChart data={categoryData?.data || []} />
-      <TopProductsTable data={topProductsData?.data || []} />
+      {/* <TopProductsTable data={topProductsData?.data || []} /> */}
     </div>
   );
 }

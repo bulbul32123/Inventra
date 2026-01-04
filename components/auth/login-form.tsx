@@ -1,6 +1,6 @@
 "use client";
 import type React from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -15,31 +15,55 @@ export function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [slowMessage, setSlowMessage] = useState<string | null>(null);
+  const slowTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    setSlowMessage(null);
 
-    const formData = new FormData(e.currentTarget);
-    const result = await login({
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
-    });
+    // Start 5s delay message
+    slowTimerRef.current = setTimeout(() => {
+      setSlowMessage(
+        "This demo uses a free database. Initial login may take a few seconds. Please wait…"
+      );
+    }, 5000);
 
-    if (result.success) {
-      router.push("/dashboard");
-      router.refresh();
-    } else {
-      setError(result.error || "Login failed");
-      setIsLoading(false);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const result = await login({
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+      });
+
+      if (result.success) {
+        router.push("/dashboard");
+        router.refresh();
+      } else {
+        setError(result.error || "Login failed");
+        setIsLoading(false);
+      }
+    } finally {
+      // Cleanup timer
+      if (slowTimerRef.current) {
+        clearTimeout(slowTimerRef.current);
+        slowTimerRef.current = null;
+      }
     }
   }
 
   return (
     <Card>
       <form onSubmit={handleSubmit}>
-        <CardContent className="pt-6 space-y-4">
+        <CardContent className="space-y-4">
+          {slowMessage && !error && (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{slowMessage}</AlertDescription>
+            </Alert>
+          )}
           {error && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
@@ -76,10 +100,10 @@ export function LoginForm() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing in...
+                Login in...
               </>
             ) : (
-              "Sign In"
+              "Log in"
             )}
           </Button>
           <p className="text-sm text-muted-foreground text-center">
