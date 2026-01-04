@@ -1,7 +1,6 @@
 "use client";
 import { fadeIn } from "@/lib/motion-variants";
 import { motion } from "framer-motion";
-import { Package2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
