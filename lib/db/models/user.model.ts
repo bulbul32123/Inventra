@@ -15,9 +15,8 @@ export interface IUser extends Document {
   lastLogin?: Date;
   createdAt: Date;
   updatedAt: Date;
-  // New fields for auto-deletion
-  isTrialUser: boolean; // Mark users as trial/preview users
-  expiresAt: Date; // When this user's data should be deleted
+  isTrialUser: boolean;
+  expiresAt: Date;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -57,20 +56,19 @@ const UserSchema = new Schema<IUser>(
       index: true,
     },
     lastLogin: Date,
-    // New fields for auto-deletion
     isTrialUser: {
       type: Boolean,
-      default: true, // Set to true for all new users (trial mode)
+      default: true,
       index: true,
     },
     expiresAt: {
       type: Date,
       required: true,
-      index: true, // Index for efficient cleanup queries
-      default: function() {
-        // Set expiration to 5 minutes from creation
-        return new Date(Date.now() + 5 * 60 * 1000); // 5 minutes in milliseconds
-      }
+      index: true,
+      default: function () {
+        // ✅ CHANGED: Expires after 7 days
+        return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      },
     },
   },
   {
@@ -80,7 +78,7 @@ const UserSchema = new Schema<IUser>(
 
 // Compound indexes
 UserSchema.index({ role: 1, isActive: 1 });
-UserSchema.index({ isTrialUser: 1, expiresAt: 1 }); // For cleanup queries
+UserSchema.index({ isTrialUser: 1, expiresAt: 1 });
 
 export const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>("User", UserSchema);

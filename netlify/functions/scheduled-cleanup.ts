@@ -2,13 +2,12 @@
 import { Handler, schedule } from "@netlify/functions";
 import { cleanupExpiredUsers } from "../../lib/utils/cleanup";
 
-// This function runs every 5 minutes
-const handler: Handler = schedule("*/5 * * * *", async (event) => {
+const handler: Handler = schedule("0 3 * * *", async (event) => {
   console.log("Netlify scheduled cleanup started...", new Date().toISOString());
-  
+
   try {
     const result = await cleanupExpiredUsers();
-    
+
     console.log("Cleanup results:", {
       success: result.success,
       deletedCount: result.deletedCount,
@@ -29,7 +28,7 @@ const handler: Handler = schedule("*/5 * * * *", async (event) => {
     };
   } catch (error) {
     console.error("Cleanup function error:", error);
-    
+
     return {
       statusCode: 500,
       body: JSON.stringify({
