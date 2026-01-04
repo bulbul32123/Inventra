@@ -26,7 +26,7 @@ export function RegisterForm() {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
       name: formData.get("name") as string,
-      role: "owner", // First user is always owner
+      role: "owner",
     });
     console.log("result: ", result);
 
