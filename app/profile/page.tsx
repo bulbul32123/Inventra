@@ -10,7 +10,3 @@ export default function Profile() {
     </DashboardLayout>
   );
 }
-
-// Task for this project
-
-// 2. Create Categories like products
